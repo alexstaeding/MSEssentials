@@ -13,13 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StaffList implements Command {
-    MSEssentials plugin;
-
-    public StaffList(MSEssentials plugin)
-    {
-        this.plugin = plugin;
-    }
-
 
     static TextComponent result = null;
 

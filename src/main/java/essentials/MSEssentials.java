@@ -26,6 +26,9 @@ import essentials.modules.language.WordCatch;
 import essentials.modules.proxychat.ProxyChatEvent;
 import essentials.modules.tab.GlobalTab;
 import essentials.modules.tab.TabPlayerLeave;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
+import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.slf4j.Logger;
 import me.lucko.luckperms.*;
 import me.lucko.luckperms.api.*;
@@ -34,7 +37,11 @@ import rocks.milspecsg.msrepository.api.config.ConfigurationService;
 import rocks.milspecsg.msrepository.service.config.ApiConfigurationService;
 
 import javax.inject.Inject;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -128,7 +135,6 @@ public class MSEssentials {
 
     public static Logger getLogger() {
         return logger;
-
     }
 
 //    public MSLangConfig getMSLangConfig()
@@ -186,7 +192,10 @@ public class MSEssentials {
     }
 
     private void initServices() {
-        velocityRootInjector = velocityRootInjector.createChildInjector(new MSEssentialsConfigurationModule(), new MSEssentialsModule());
+        injector = velocityRootInjector.createChildInjector(new MSEssentialsConfigurationModule(), new MSEssentialsModule());
+
+
+
     }
 
 
@@ -194,12 +203,28 @@ public class MSEssentials {
         @Override
         protected void configure() {
             super.configure();
-
-            bind(new TypeLiteral<ApiConfigurationService>() {
-            }).to(new TypeLiteral<MSConfigurationService>() {
-            });
+            bind(new TypeLiteral<ApiConfigurationService>() {})
+                .to(new TypeLiteral<MSConfigurationService>() {});
+            bind(new TypeLiteral<ConfigurationLoader<CommentedConfigurationNode>>() {})
+                .toInstance(getConfig());
         }
     }
+    public static ConfigurationLoader<CommentedConfigurationNode> getConfig() {
+        Path configPath = Paths.get(MSEssentials.defaultConfigPath + "/msessentials.json");
+        try {
+            if (!Files.exists(configPath)) {
+                Files.createDirectories(MSEssentials.defaultConfigPath);
+                Files.createFile(configPath);
+            }
+            return HoconConfigurationLoader.builder()
+                .setPath(configPath)
+                .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
     private static class MSEssentialsModule extends AbstractModule {
         @Override
