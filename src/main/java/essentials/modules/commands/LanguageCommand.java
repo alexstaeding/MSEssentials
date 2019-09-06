@@ -6,20 +6,19 @@ import com.velocitypowered.api.proxy.Player;
 import essentials.MSEssentials;
 import essentials.modules.PluginMessages;
 import essentials.modules.PluginPermissions;
+import essentials.modules.language.MSLang;
 import net.kyori.text.TextComponent;
 import net.kyori.text.format.TextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import javax.inject.Inject;
 import java.util.Arrays;
 
 public class LanguageCommand implements Command {
 
-    public MSEssentials plugin;
 
-    public LanguageCommand(MSEssentials main)
-    {
-        plugin = main;
-    }
+    @Inject
+    MSLang msLang;
 
     @Override
     public void execute(CommandSource source, @NonNull String[] args) {
@@ -58,7 +57,7 @@ public class LanguageCommand implements Command {
                 if (source instanceof Player) {
                     Player player = (Player) source;
                     if (player.hasPermission(PluginPermissions.LANGUAGEADMIN)) {
-                        if (!plugin.getMSLangConfig().addSwear(argument, source)) {
+                        if (!msLang.addSwear(argument, source)) {
                             player.sendMessage(existing);
                             return;
                         }
@@ -69,15 +68,15 @@ public class LanguageCommand implements Command {
                         return;
                     }
                 } else {
-                    plugin.getMSLangConfig().addSwear(argument, source);
+                    msLang.addSwear(argument, source);
                     source.sendMessage(success);
                     return;
                 }
             }
 
             if (args[length - args.length].equals("list") && !(args.length > 1)) {
-                if (!plugin.getMSLangConfig().getSwears().isEmpty()) {
-                    source.sendMessage(TextComponent.of(plugin.getMSLangConfig().getSwears().toString()));
+                if (!msLang.isSwearsEmpty()) {
+                    source.sendMessage(TextComponent.of(msLang.getSwears().toString()));
                     return;
                 } else {
                     source.sendMessage(TextComponent.of("Swear list is empty."));
@@ -85,8 +84,8 @@ public class LanguageCommand implements Command {
             }
 
             if (args[length - args.length].equals("elist")) {
-                if (!plugin.getMSLangConfig().getExceptions().isEmpty()) {
-                    source.sendMessage(TextComponent.of(plugin.getMSLangConfig().getExceptions().toString()));
+                if (!msLang.isExceptionsEmpty()) {
+                    source.sendMessage(TextComponent.of(msLang.getExceptions().toString()));
                     return;
                 }
                 source.sendMessage(TextComponent.of("Exceptions List is empty").color(TextColor.YELLOW));
@@ -103,7 +102,7 @@ public class LanguageCommand implements Command {
                 if (source instanceof Player) {
                     Player player = (Player) source;
                     if (player.hasPermission(PluginPermissions.LANGUAGEADMIN)) {
-                        if (!plugin.getMSLangConfig().addExempt(argument, source)) {
+                        if (!msLang.addExempt(argument, source)) {
                             player.sendMessage(existingexempt);
                             return;
                         }
@@ -114,7 +113,7 @@ public class LanguageCommand implements Command {
                         return;
                     }
                 } else {
-                    if (!plugin.getMSLangConfig().addExempt(argument, source)) {
+                    if (!msLang.addExempt(argument, source)) {
                         source.sendMessage(existingexempt);
                         return;
                     }
@@ -135,7 +134,7 @@ public class LanguageCommand implements Command {
                         .content(argument + " isn't part of the swears list")
                         .build();
 
-                if (!plugin.getMSLangConfig().removeSwear(argument, source)) {
+                if (!msLang.removeSwear(argument, source)) {
                     source.sendMessage(nonExisting);
                     return;
                 }
@@ -155,7 +154,7 @@ public class LanguageCommand implements Command {
                         .content(argument + " isn't part of the exception list")
                         .build();
 
-                if (!plugin.getMSLangConfig().removeExempt(argument, source)) {
+                if (!msLang.removeExempt(argument, source)) {
                     source.sendMessage(nonExisting);
                     return;
                 }

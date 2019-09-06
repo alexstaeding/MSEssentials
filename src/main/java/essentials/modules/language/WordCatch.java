@@ -1,22 +1,24 @@
 package essentials.modules.language;
 
+import com.google.common.reflect.TypeToken;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import essentials.MSEssentials;
+import essentials.modules.Config.ConfigKeys;
+import rocks.milspecsg.msrepository.api.config.ConfigurationService;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
 public class WordCatch {
+
+
+    @Inject
     ProxyServer proxyServer;
 
-
-    public static MSEssentials plugin;
-
-    public WordCatch(MSEssentials main, ProxyServer server){
-        plugin = main;
-        proxyServer = server;
-    }
+    @Inject
+    ConfigurationService configurationService;
 
     public static String getFinalArg(final String[] args, final int start){
         final StringBuilder bldr = new StringBuilder();
@@ -77,15 +79,15 @@ public class WordCatch {
     }
 
     public List<String> checkforforbidden(List<String> finalwords){
-        List<String> forbiddenlist = plugin.getMSLangConfig().getSwears();
-        for (String exception : plugin.getMSLangConfig().getExceptions()){
+        List<String> forbiddenlist = new ArrayList<>(configurationService.getConfigList(ConfigKeys.SWEARS_LIST, new TypeToken<List<String>>() {}));
+        for (String exception : configurationService.getConfigList(ConfigKeys.SWEARS_EXCEPTION_LIST, new TypeToken<List<String>>() {})){
             for(String swear : finalwords){
                 if(swear.contains(exception)){
                     return null;
                 }
             }
         }
-        for(String forbidden : plugin.getMSLangConfig().getSwears()){
+        for(String forbidden : configurationService.getConfigList(ConfigKeys.SWEARS_LIST, new TypeToken<List<String>>() {})){
             for(String swear: finalwords){
                 if(swear.toLowerCase().contains(forbidden)){
                     if(!(forbiddenlist.contains(forbidden))){
@@ -100,14 +102,14 @@ public class WordCatch {
 
     public List<String> checkswear(List<String> finalwords){
         List<String> swearlist = new ArrayList<>();
-        for(String exception: plugin.getMSLangConfig().getExceptions()){
+        for(String exception: configurationService.getConfigList(ConfigKeys.SWEARS_EXCEPTION_LIST, new TypeToken<List<String>>() {})){
             for(String swear :finalwords){
                 if(swear.contains(exception)){
                     return null;
                 }
             }
         }
-        for(String swears : plugin.getMSLangConfig().getSwears()){
+        for(String swears : configurationService.getConfigList(ConfigKeys.SWEARS_LIST, new TypeToken<List<String>>() {})){
             for (String swear : finalwords){
                 String newswear = swear.toLowerCase();
                 if(newswear.contains(swears.toLowerCase())){

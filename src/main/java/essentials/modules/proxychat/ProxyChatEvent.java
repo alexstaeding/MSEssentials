@@ -11,6 +11,7 @@ import essentials.modules.PluginPermissions;
 import essentials.modules.StaffChat.StaffChat;
 import essentials.modules.Utils;
 import essentials.modules.events.MSEssentialsChatFormedEvent;
+import essentials.modules.language.WordCatch;
 import me.lucko.luckperms.api.Contexts;
 import me.lucko.luckperms.api.User;
 import me.lucko.luckperms.api.caching.MetaData;
@@ -18,12 +19,15 @@ import me.lucko.luckperms.api.caching.UserData;
 import net.kyori.text.TextComponent;
 import net.kyori.text.event.HoverEvent;
 
+import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public class ProxyChatEvent {
 
+    @Inject
+    WordCatch wordCatch;
 
     @Subscribe
     public void onChat(PlayerChatEvent e)
@@ -37,7 +41,7 @@ public class ProxyChatEvent {
             return;
         }
 
-        List<String> swearlist = MSEssentials.wordCatch.isswear(message);
+        List<String> swearlist = wordCatch.isswear(message);
         if(swearlist != null)
         {
 

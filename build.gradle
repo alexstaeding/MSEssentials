@@ -40,6 +40,13 @@ shadowJar {
     archiveName = "MSEssentials-Velocity-${modVersion}.jar"
 
     dependencies {
+        include dependency('com.googlecode.json-simple:json-simple:1.1')
+        include dependency('com.cedarsoftware:json-io:4.5.0')
+        include dependency('org.spongepowered:configurate-core:3.6')
+        include dependency('org.spongepowered:configurate-gson:3.6')
+        include dependency('org.spongepowered:configurate-yaml:3.6')
+        include dependency('org.spongepowered:configurate-core:3.6')
+        include dependency('org.javacord:javacord:3.0.4')
         include project(':msrepository:msr-api:api-config')
         include project(':msrepository:msr-sponge:sponge-config')
     }
