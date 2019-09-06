@@ -1,0 +1,1 @@
+{"id":"msessentials","version":"1.0","description":"your one stop velocity plugin!","authors":["STG_Allen"],"dependencies":[{"id":"luckperms","optional":false}],"main":"essentials.MSEssentials"}
