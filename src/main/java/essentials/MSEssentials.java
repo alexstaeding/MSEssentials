@@ -3,7 +3,9 @@ package essentials;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
+import com.google.inject.name.Names;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -19,11 +21,12 @@ import essentials.discordbridge.discord.MSEssentialsChatListener;
 import essentials.discordbridge.velocity.*;
 import essentials.modules.Config.ConfigKeys;
 import essentials.modules.Config.MSConfigurationService;
+import essentials.modules.Config.MSDiscordConfigurationService;
 import essentials.modules.StaffChat.StaffChat;
 import essentials.modules.StaffChat.StaffChatEvent;
 import essentials.modules.commands.*;
-import essentials.modules.language.WordCatch;
 import essentials.modules.proxychat.ProxyChatEvent;
+import essentials.modules.tab.ConfigManager;
 import essentials.modules.tab.GlobalTab;
 import essentials.modules.tab.TabPlayerLeave;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -32,13 +35,12 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.slf4j.Logger;
 import me.lucko.luckperms.*;
 import me.lucko.luckperms.api.*;
+import org.spongepowered.api.data.key.Keys;
 import rocks.milspecsg.msrepository.APIConfigurationModule;
 import rocks.milspecsg.msrepository.api.config.ConfigurationService;
 import rocks.milspecsg.msrepository.service.config.ApiConfigurationService;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -77,11 +79,12 @@ public class MSEssentials {
 
     @Subscribe
     public void onShutdown(ProxyShutdownEvent e) {
-        Bridge.onProxyShutdown();
+        injector.getInstance(Bridge.class).onProxyShutdown();
     }
 
     @Subscribe
     public void onInit(ProxyInitializeEvent event) {
+        // needs to be first thing
         initServices();
         logger.info("is now starting!");
 //        this.msLangConfig = new MSLangConfig(this);
@@ -95,12 +98,13 @@ public class MSEssentials {
 //        MSLangConfig.enable();
 //        PlayerConfig.enable();
 //        MSEssentialsConfig.enable();
-//        ConfigManager.setupConfig();
+        ConfigManager.setupConfig();
 
 
         instance = this;
 
-        Bridge.enable();
+        // enable is called after config is loaded
+        injector.getInstance(Bridge.class);
 
         StaffChat.toggledSet = new HashSet<UUID>();
 
@@ -110,7 +114,7 @@ public class MSEssentials {
         logger.info("Enabling GlobalTab");
         GlobalTab.schedule();
 
-        injector.getInstance(ConfigurationService.class).addConfigLoadedListener(plugin -> {
+        injector.getInstance(Key.get(ConfigurationService.class, Names.named("msessentials"))).addConfigLoadedListener(plugin -> {
             if (!alreadyLoaded) {
                 initListeners();
                 alreadyLoaded = true;
@@ -118,7 +122,8 @@ public class MSEssentials {
         });
 
         // this must be last to run on plugin init
-        injector.getInstance(ConfigurationService.class).load(this);
+        injector.getInstance(Key.get(ConfigurationService.class, Names.named("msessentials"))).load(this);
+        injector.getInstance(Key.get(ConfigurationService.class, Names.named("discord"))).load(this);
     }
 
     public void reload() {
@@ -152,7 +157,7 @@ public class MSEssentials {
     public void initListeners() {
         logger.info("initializing listeners");
 
-        if (injector.getInstance(ConfigurationService.class).getConfigBoolean(ConfigKeys.PROXY_CHAT_ENABLED)) {
+        if (injector.getInstance(Key.get(ConfigurationService.class, Names.named("msessentials"))).getConfigBoolean(ConfigKeys.PROXY_CHAT_ENABLED)) {
             server.getEventManager().register(this, injector.getInstance(ProxyChatListener.class));
         }
 
@@ -181,7 +186,7 @@ public class MSEssentials {
         String subChannel = in.readUTF();
 
         if (subChannel.equals("Balance")) {
-            String packet[] = in.readUTF().split(":");
+            String[] packet = in.readUTF().split(":");
             String username = packet[0];
             Double balance = Double.parseDouble(packet[1]);
             if (playerBalances.containsKey(username))
@@ -193,24 +198,30 @@ public class MSEssentials {
 
     private void initServices() {
         injector = velocityRootInjector.createChildInjector(new MSEssentialsConfigurationModule(), new MSEssentialsModule());
-
-
-
     }
 
 
-    private static class MSEssentialsConfigurationModule extends APIConfigurationModule {
+    private static class MSEssentialsConfigurationModule extends AbstractModule {
         @Override
         protected void configure() {
-            super.configure();
-            bind(new TypeLiteral<ApiConfigurationService>() {})
+
+            bind(new TypeLiteral<ConfigurationService>() {})
+                .annotatedWith(Names.named("msessentials"))
                 .to(new TypeLiteral<MSConfigurationService>() {});
-            bind(new TypeLiteral<ConfigurationLoader<CommentedConfigurationNode>>() {})
-                .toInstance(getConfig());
+
+            bind(new TypeLiteral<ConfigurationService>() {})
+                .annotatedWith(Names.named("discord"))
+                .to(new TypeLiteral<MSDiscordConfigurationService>() {});
+
+            bind(new TypeLiteral<ConfigurationLoader<CommentedConfigurationNode>>() {}).annotatedWith(Names.named("msessentials"))
+                .toInstance(getConfig("msessentials"));
+
+            bind(new TypeLiteral<ConfigurationLoader<CommentedConfigurationNode>>() {}).annotatedWith(Names.named("discord"))
+                .toInstance(getConfig("discord"));
         }
     }
-    public static ConfigurationLoader<CommentedConfigurationNode> getConfig() {
-        Path configPath = Paths.get(MSEssentials.defaultConfigPath + "/msessentials.json");
+    public static ConfigurationLoader<CommentedConfigurationNode> getConfig(String name) {
+        Path configPath = Paths.get(MSEssentials.defaultConfigPath + "/" + name + ".conf");
         try {
             if (!Files.exists(configPath)) {
                 Files.createDirectories(MSEssentials.defaultConfigPath);

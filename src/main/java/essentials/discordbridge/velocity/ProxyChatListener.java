@@ -1,5 +1,6 @@
 package essentials.discordbridge.velocity;
 
+import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.proxy.Player;
 import essentials.MSEssentials;
@@ -18,6 +19,8 @@ import java.util.Optional;
 
 public class ProxyChatListener {
 
+    @Inject
+    Bridge bridge;
 
 
     @Subscribe
@@ -40,7 +43,7 @@ public class ProxyChatListener {
         final String msg = TextUtil.stripString(TextUtil.toMarkdown((TextComponent) event.getMessage()));
         final String sender = TextUtil.stripString(TextUtil.toMarkdown(TextComponent.of(event.getSender().getUsername())));
 
-        Bridge.getConfig().getOutChannels(Bridge.getDiscordApi())
+        bridge.getOutChannels(bridge.getDiscordApi())
                 .forEach(textChannel -> textChannel.sendMessage(finalPrefix + sender + msg));
     }
 }

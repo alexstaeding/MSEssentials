@@ -1,5 +1,6 @@
 package essentials.discordbridge.velocity;
 
+import com.google.inject.Inject;
 import essentials.MSEssentials;
 import essentials.discordbridge.Bridge;
 import essentials.modules.PluginMessages;
@@ -12,10 +13,13 @@ import org.javacord.api.event.message.MessageCreateEvent;
 
 public class DiscordStaffChat {
 
+    @Inject
+    Bridge bridge;
+
     public void onMessage(MessageCreateEvent event)
     {
 
-        if(!Bridge.getConfig().getStaffChannel(event.getApi()).contains(event.getChannel())) return;
+        if(!bridge.getStaffChannel(event.getApi()).contains(event.getChannel())) return;
         if(event.getMessageAuthor().isYourself()) return;
 
 
@@ -32,7 +36,7 @@ public class DiscordStaffChat {
                 .clickEvent(ClickEvent.openUrl("https://www.google.com/"))
                 .build();
 
-        if(Bridge.getConfig().getStaffChannel(event.getApi()).contains(event.getChannel()))
+        if(bridge.getStaffChannel(event.getApi()).contains(event.getChannel()))
         {
             MSEssentials.server.getAllPlayers().stream().filter(target -> target.hasPermission(PluginPermissions.STAFFCHAT))
                     .forEach(target -> {target.sendMessage(component);});

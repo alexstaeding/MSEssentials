@@ -1,5 +1,6 @@
 package essentials.discordbridge.velocity;
 
+import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.proxy.Player;
 import essentials.MSEssentials;
@@ -17,6 +18,9 @@ import net.kyori.text.TextComponent;
 import java.util.Optional;
 
 public class StaffChatListener {
+
+    @Inject
+    Bridge bridge;
 
     @Subscribe
     public void onStaffChat(StaffChatFormedEvent event)
@@ -38,7 +42,7 @@ public class StaffChatListener {
         final String msg = TextUtil.stripString(TextUtil.toMarkdown((TextComponent) event.getMessage()));
         final String sender = TextUtil.stripString(TextUtil.toMarkdown(TextComponent.of(event.getSender().getUsername())));
 
-        Bridge.getConfig().getStaffChannel(Bridge.getDiscordApi())
+        bridge.getStaffChannel(bridge.getDiscordApi())
                 .forEach(textChannel -> textChannel.sendMessage(finalPrefix + sender + msg));
 
         MSEssentials.logger.info(finalPrefix + sender + msg);

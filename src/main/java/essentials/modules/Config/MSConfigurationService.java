@@ -2,6 +2,8 @@ package essentials.modules.Config;
 
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import com.google.inject.name.Named;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import rocks.milspecsg.msrepository.service.config.ApiConfigurationService;
@@ -11,10 +13,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+@Singleton
 public class MSConfigurationService extends ApiConfigurationService {
 
     @Inject
-    public MSConfigurationService(ConfigurationLoader<CommentedConfigurationNode> configLoader) {
+    public MSConfigurationService(@Named("msessentials") ConfigurationLoader<CommentedConfigurationNode> configLoader) {
         super(configLoader);
     }
 
@@ -38,8 +41,8 @@ public class MSConfigurationService extends ApiConfigurationService {
         defaultBooleanMap.put(ConfigKeys.PROXY_CHAT_ENABLED, true);
         defaultBooleanMap.put(ConfigKeys.CHAT_FILTER_ENABLED, true);
         defaultBooleanMap.put(ConfigKeys.DISCORD_BRIDGE_ENABLED, true);
-        defaultListMap.put(ConfigKeys.SWEARS_LIST, Collections.emptyList());
-        defaultListMap.put(ConfigKeys.SWEARS_EXCEPTION_LIST, Collections.emptyList());
+        defaultListMap.put(ConfigKeys.SWEARS_LIST, new ArrayList<String>());
+        defaultListMap.put(ConfigKeys.SWEARS_EXCEPTION_LIST, new ArrayList<String>());
         defaultStringMap.put(ConfigKeys.SWEAR_REPLACEMENT, "I <3 MilspecSG!");
     }
 

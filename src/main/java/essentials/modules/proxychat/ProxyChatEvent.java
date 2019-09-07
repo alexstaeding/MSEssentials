@@ -29,6 +29,9 @@ public class ProxyChatEvent {
     @Inject
     WordCatch wordCatch;
 
+    @Inject
+    Bridge bridge;
+
     @Subscribe
     public void onChat(PlayerChatEvent e)
     {
@@ -59,7 +62,7 @@ public class ProxyChatEvent {
 
 
     }
-    public static String checkPlayerName(String message)
+    public String checkPlayerName(String message)
     {
         for (Player onlinePlayer : MSEssentials.getServer().getAllPlayers()) {
             if (message.toLowerCase().contains(onlinePlayer.getUsername().toLowerCase())) {
@@ -69,7 +72,7 @@ public class ProxyChatEvent {
         return message;
     }
 
-    public static void sendMessage(PlayerChatEvent e, String message)
+    public void sendMessage(PlayerChatEvent e, String message)
     {
         e.setResult(PlayerChatEvent.ChatResult.denied());
         Player player = e.getPlayer();
@@ -157,8 +160,7 @@ public class ProxyChatEvent {
             }
             TextComponent finalName = name;
             String finalMessage = message;
-            Bridge.getConfig().getOutChannels(Bridge.getDiscordApi()).forEach(chan -> chan.sendMessage(finalName + finalMessage));
-
+            bridge.getOutChannels(bridge.getDiscordApi()).forEach(chan -> chan.sendMessage(finalName + finalMessage));
         }
     }
 }

@@ -1,6 +1,7 @@
 package essentials.modules.language;
 
 import com.google.common.reflect.TypeToken;
+import com.google.inject.name.Named;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import essentials.MSEssentials;
@@ -18,13 +19,14 @@ public class WordCatch {
     ProxyServer proxyServer;
 
     @Inject
+    @Named("msessentials")
     ConfigurationService configurationService;
 
-    public static String getFinalArg(final String[] args, final int start){
+    public static String getFinalArg(final String[] args, final int start) {
         final StringBuilder bldr = new StringBuilder();
 
-        for(int i = start; i< args.length; i++){
-            if(i != start){
+        for (int i = start; i < args.length; i++) {
+            if (i != start) {
                 bldr.append(" ");
             }
             bldr.append(args[i]);
@@ -32,7 +34,7 @@ public class WordCatch {
         return bldr.toString();
     }
 
-    public List<String> aggressiveMode(String swear){
+    public List<String> aggressiveMode(String swear) {
 
         String message = swear.toLowerCase();
 
@@ -72,68 +74,71 @@ public class WordCatch {
 
     }
 
-    public String removeDups(String s){
-        if(s.length() <= 1) return s;
-        if(s.substring(1, 2).equalsIgnoreCase(s.substring(0,1)))return removeDups(s.substring(1));
-        else return s.substring(0,1) + removeDups(s.substring(1));
+    public String removeDups(String s) {
+        if (s.length() <= 1) return s;
+        if (s.substring(1, 2).equalsIgnoreCase(s.substring(0, 1))) return removeDups(s.substring(1));
+        else return s.substring(0, 1) + removeDups(s.substring(1));
     }
 
-    public List<String> checkforforbidden(List<String> finalwords){
-        List<String> forbiddenlist = new ArrayList<>(configurationService.getConfigList(ConfigKeys.SWEARS_LIST, new TypeToken<List<String>>() {}));
-        for (String exception : configurationService.getConfigList(ConfigKeys.SWEARS_EXCEPTION_LIST, new TypeToken<List<String>>() {})){
-            for(String swear : finalwords){
-                if(swear.contains(exception)){
+    public List<String> checkforforbidden(List<String> finalwords) {
+        List<String> forbiddenlist = new ArrayList<>(configurationService.getConfigList(ConfigKeys.SWEARS_LIST, new TypeToken<List<String>>() {
+        }));
+        for (String exception : configurationService.getConfigList(ConfigKeys.SWEARS_EXCEPTION_LIST, new TypeToken<List<String>>() {
+        })) {
+            for (String swear : finalwords) {
+                if (swear.contains(exception)) {
                     return null;
                 }
             }
         }
-        for(String forbidden : configurationService.getConfigList(ConfigKeys.SWEARS_LIST, new TypeToken<List<String>>() {})){
-            for(String swear: finalwords){
-                if(swear.toLowerCase().contains(forbidden)){
-                    if(!(forbiddenlist.contains(forbidden))){
+        for (String forbidden : configurationService.getConfigList(ConfigKeys.SWEARS_LIST, new TypeToken<List<String>>() {
+        })) {
+            for (String swear : finalwords) {
+                if (swear.toLowerCase().contains(forbidden)) {
+                    if (!(forbiddenlist.contains(forbidden))) {
                         forbiddenlist.add(forbidden);
                     }
                 }
             }
         }
-        if(forbiddenlist.isEmpty()) return null;
+        if (forbiddenlist.isEmpty()) return null;
         return forbiddenlist;
     }
 
-    public List<String> checkswear(List<String> finalwords){
+    public List<String> checkswear(List<String> finalwords) {
         List<String> swearlist = new ArrayList<>();
-        for(String exception: configurationService.getConfigList(ConfigKeys.SWEARS_EXCEPTION_LIST, new TypeToken<List<String>>() {})){
-            for(String swear :finalwords){
-                if(swear.contains(exception)){
+        for (String exception : configurationService.getConfigList(ConfigKeys.SWEARS_EXCEPTION_LIST, new TypeToken<List<String>>() {
+        })) {
+            for (String swear : finalwords) {
+                if (swear.contains(exception)) {
                     return null;
                 }
             }
         }
-        for(String swears : configurationService.getConfigList(ConfigKeys.SWEARS_LIST, new TypeToken<List<String>>() {})){
-            for (String swear : finalwords){
+        for (String swears : configurationService.getConfigList(ConfigKeys.SWEARS_LIST, new TypeToken<List<String>>() {
+        })) {
+            for (String swear : finalwords) {
                 String newswear = swear.toLowerCase();
-                if(newswear.contains(swears.toLowerCase())){
-                    if(!(swearlist.contains(swears.toLowerCase()))){
+                if (newswear.contains(swears.toLowerCase())) {
+                    if (!(swearlist.contains(swears.toLowerCase()))) {
                         swearlist.add(swears.toLowerCase());
                     }
                 }
             }
         }
-        if(swearlist.isEmpty())return null;
+        if (swearlist.isEmpty()) return null;
 
         return swearlist;
     }
 
-    public String checkPlayerName(List<String> msg){
+    public String checkPlayerName(List<String> msg) {
         String finalPNMSG = null;
         String message = msg.toString();
 
 
-
-        for(Player player : proxyServer.getAllPlayers()){
-            if(msg.contains(player.getUsername()))
-            {
-                String mess = message.replace(player.getUsername(), "@"+player.getUsername());
+        for (Player player : proxyServer.getAllPlayers()) {
+            if (msg.contains(player.getUsername())) {
+                String mess = message.replace(player.getUsername(), "@" + player.getUsername());
 
                 finalPNMSG = mess;
             }
@@ -141,20 +146,24 @@ public class WordCatch {
         return finalPNMSG;
     }
 
-    public Player getPlayerFromName(String s){
-        for(Player player : proxyServer.getAllPlayers()){
-            if(s.contains(player.getUsername())){
+    public Player getPlayerFromName(String s) {
+        for (Player player : proxyServer.getAllPlayers()) {
+            if (s.contains(player.getUsername())) {
                 return player;
             }
         }
         return null;
     }
 
-    public String containsPlayerName(String s){return checkPlayerName(aggressiveMode(s));}
+    public String containsPlayerName(String s) {
+        return checkPlayerName(aggressiveMode(s));
+    }
 
-    public List<String> isswear(String s){ return checkswear(aggressiveMode(s));}
+    public List<String> isswear(String s) {
+        return checkswear(aggressiveMode(s));
+    }
 
-    public List<String> isforbidden(String s){
+    public List<String> isforbidden(String s) {
         return checkforforbidden(aggressiveMode(s));
     }
 
