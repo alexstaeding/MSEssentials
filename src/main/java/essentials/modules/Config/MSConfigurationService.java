@@ -49,12 +49,12 @@ public class MSConfigurationService extends ApiConfigurationService {
     @Override
     protected void initNodeNameMap() {
 
-        nodeNameMap.put(ConfigKeys.PROXY_CHAT_ENABLED, "proxyChatEnabled");
-        nodeNameMap.put(ConfigKeys.CHAT_FILTER_ENABLED, "chatFilterEnabled");
-        nodeNameMap.put(ConfigKeys.DISCORD_BRIDGE_ENABLED, "discordBridgeEnabled");
-        nodeNameMap.put(ConfigKeys.SWEARS_LIST, "swears");
-        nodeNameMap.put(ConfigKeys.SWEARS_EXCEPTION_LIST, "exceptions");
-        nodeNameMap.put(ConfigKeys.SWEAR_REPLACEMENT, "swearReplacement");
+        nodeNameMap.put(ConfigKeys.PROXY_CHAT_ENABLED, "modules.proxyChatEnabled");
+        nodeNameMap.put(ConfigKeys.CHAT_FILTER_ENABLED, "modules.chatFilterEnabled");
+        nodeNameMap.put(ConfigKeys.DISCORD_BRIDGE_ENABLED, "modules.discordBridgeEnabled");
+        nodeNameMap.put(ConfigKeys.SWEARS_LIST, "mslang.swears");
+        nodeNameMap.put(ConfigKeys.SWEARS_EXCEPTION_LIST, "mslang.exceptions");
+        nodeNameMap.put(ConfigKeys.SWEAR_REPLACEMENT, "mslang.swearReplacement");
 
     }
 

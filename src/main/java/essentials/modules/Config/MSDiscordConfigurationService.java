@@ -62,7 +62,6 @@ public class MSDiscordConfigurationService extends ApiConfigurationService {
         defaultIntegerMap.put(ConfigKeys.DISCORD_PLAYER_LIST_RESPONSE_REMOVE_DELAY, 10);
         defaultStringMap.put(ConfigKeys.VELOCITY_JOIN_FORMAT, "**{player} joined the game");
         defaultStringMap.put(ConfigKeys.VELOCITY_LEAVE_FORMAT, "**{player} left the game**");
-
     }
 
     @Override
@@ -71,13 +70,13 @@ public class MSDiscordConfigurationService extends ApiConfigurationService {
         nodeNameMap.put(ConfigKeys.DISCORD_IN_CHANNELS, "channelsIn");
         nodeNameMap.put(ConfigKeys.DISCORD_OUT_CHANNELS, "channelsOut");
         nodeNameMap.put(ConfigKeys.DISCORD_STAFF_CHANNELS, "channelsStaff");
-        nodeNameMap.put(ConfigKeys.DISCORD_PLAYER_LIST_ENABLED, "playerListEnabled");
-        nodeNameMap.put(ConfigKeys.DISCORD_PLAYER_LIST_FORMAT, "playerListFormat");
-        nodeNameMap.put(ConfigKeys.DISCORD_PLAYER_LIST_SEPARATOR, "playerListSeparator");
-        nodeNameMap.put(ConfigKeys.DISCORD_PLAYER_LIST_COMMAND_REMOVE_DELAY, "playerListCommandRemoveDelay");
-        nodeNameMap.put(ConfigKeys.DISCORD_PLAYER_LIST_RESPONSE_REMOVE_DELAY, "playerListResponseRemoveDelay");
-        nodeNameMap.put(ConfigKeys.VELOCITY_JOIN_FORMAT, "velocityJoinFormat");
-        nodeNameMap.put(ConfigKeys.VELOCITY_LEAVE_FORMAT, "velocityLeaveFormat");
+        nodeNameMap.put(ConfigKeys.DISCORD_PLAYER_LIST_ENABLED, "playerList.enabled");
+        nodeNameMap.put(ConfigKeys.DISCORD_PLAYER_LIST_FORMAT, "playerList.format");
+        nodeNameMap.put(ConfigKeys.DISCORD_PLAYER_LIST_SEPARATOR, "playerList.separator");
+        nodeNameMap.put(ConfigKeys.DISCORD_PLAYER_LIST_COMMAND_REMOVE_DELAY, "playerList.commandRemoveDelay");
+        nodeNameMap.put(ConfigKeys.DISCORD_PLAYER_LIST_RESPONSE_REMOVE_DELAY, "playerList.responseRemoveDelay");
+        nodeNameMap.put(ConfigKeys.VELOCITY_JOIN_FORMAT, "velocity.joinFormat");
+        nodeNameMap.put(ConfigKeys.VELOCITY_LEAVE_FORMAT, "velocity.leaveFormat");
     }
 
     @Override
